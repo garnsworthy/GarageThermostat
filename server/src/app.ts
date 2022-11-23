@@ -1,19 +1,17 @@
-import express from 'express'
+import express from "express";
 
-// var express = require("express")
-
-// var app = express()
-// app.use(express.static('public'))
-// app.all("/data", function(req, res) {
-// })
-// app.listen(8080)
 const app = express();
-const port = 8080;
+const port = 3000;
 
-app.get('/', (req, res) => {
-  res.send('Hello World!');
-})
+app.use(express.json());
+// serve static files from client.
+app.use(express.static("../client/build"));
+
+app.post("/data", (req, res) => {
+  console.log(req.body);
+  res.send(JSON.stringify({ temp: 15, humidity: 55, heating: true }));
+});
 
 app.listen(port, () => {
   return console.log(`Express is listening at http://localhost:${port}`);
-})
+});

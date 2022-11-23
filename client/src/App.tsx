@@ -16,15 +16,17 @@ function App() {
     return unitSI ? `${v} °C` : `${((9 / 5) * v + 32).toFixed(p || 0)} °F`;
   };
 
-  // go to the server once a minute to update and get data.
+  // go to the server once a 5 seconds to update and get data.
   useInterval(async () => {
     const res = await fetch("/data", {
+      headers: new Headers({ "Content-Type": "application/json" }),
       method: "POST",
       body: JSON.stringify({ setpoint: setpoint, heat: heat }),
     });
+    
     const json = await res.json();
     setFromHeater(json);
-  }, 60000);
+  }, 5000);
 
   return (
     <div>
@@ -56,7 +58,9 @@ function App() {
 
         <Grid container item xs={12} textAlign={"center"}>
           <Grid item xs={6}>
-            <Typography variant={"h6"}>{formatVal(fromHeater.temp, 2)}</Typography>
+            <Typography variant={"h6"}>
+              {formatVal(fromHeater.temp, 2)}
+            </Typography>
             <Typography variant={"caption"}>Temperature</Typography>
           </Grid>
           <Grid item xs={6}>
