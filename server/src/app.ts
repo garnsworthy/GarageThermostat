@@ -4,7 +4,7 @@ const port = 3000;
 const embeddedPort = 8085;
 
 const data = {
-  setpoint: 0,
+  setpoint: 1100,
   heat: false,
   temp: 15,
   humidity: 55,
@@ -20,6 +20,8 @@ app.use(express.json());
 app.use(express.static("../client/build"));
 app.post("/data", (req, res) => {
   console.log(req.body);
+  data.setpoint = req.body.setpoint;
+  data.heat = req.body.heat;
   res.send(
     JSON.stringify({
       temp: data.temp,
@@ -38,13 +40,16 @@ app.listen(port, () => {
  * Reply with the setpt and fHeat.
  */
 const embeddedApp = express();
-app.use(express.json());
+embeddedApp.use(express.json());
 
-app.post("/data", (req, res) => {
+embeddedApp.post("*", (req, res) => {
   console.log(req.body);
+  data.temp = req.body.temp;
+  data.humidity = req.body.hum;
+  data.heating = req.body.heating;
   res.send(JSON.stringify({ setpoint: data.setpoint, heat: data.heat }));
 });
 
-app.listen(embeddedPort, () => {
-  return console.log(`Embedded Express is listening at http://localhost:${port}`);
+embeddedApp.listen(embeddedPort, () => {
+  return console.log(`Embedded Express is listening at http://localhost:${embeddedPort}`);
 });
