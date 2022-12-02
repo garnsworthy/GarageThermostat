@@ -1,4 +1,5 @@
 import express from "express";
+const fs = require('fs');
 
 const port = 3000;
 const embeddedPort = 8085;
@@ -30,6 +31,15 @@ app.post("/data", (req, res) => {
     })
   );
 });
+app.get("/data", (req, res) => {
+  res.send(
+    JSON.stringify({
+      temp: data.temp,
+      humidity: data.humidity,
+      heating: data.heating,
+    })
+  );
+});
 
 app.listen(port, () => {
   return console.log(`Express is listening at http://localhost:${port}`);
@@ -48,8 +58,22 @@ embeddedApp.post("*", (req, res) => {
   data.humidity = req.body.hum;
   data.heating = req.body.heating;
   res.send(JSON.stringify({ setpoint: data.setpoint, heat: data.heat }));
+  recordData();
 });
 
 embeddedApp.listen(embeddedPort, () => {
   return console.log(`Embedded Express is listening at http://localhost:${embeddedPort}`);
 });
+
+const recordData = () => {
+  const date = new Date();
+  const content = JSON.stringify({...data, time: date.getTime()}) + '\n';
+  const fileName = `data${date.getUTCFullYear()}${date.getUTCMonth()}.data`;
+
+  fs.appendFile(fileName, content, err => {
+    if (err) {
+      console.error(err);
+    }
+    // done!
+  });
+}

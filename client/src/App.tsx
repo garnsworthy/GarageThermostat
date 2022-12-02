@@ -13,7 +13,9 @@ function App() {
   const [heat, setHeat] = useState(false);
   const [unitSI, setUnitSI] = useState(false);
   const formatVal = (v: number, p?: number) => {
-    return unitSI ? `${(v/100).toFixed(p||0)} °C` : `${((9 / 5) * (v/100) + 32).toFixed(p || 0)} °F`;
+    return unitSI ?
+      `${(v / 100).toFixed(p || 0)} °C` :
+      `${((9 / 5) * (v / 100) + 32).toFixed(p || 0)} °F`;
   };
 
   // go to the server once a 5 seconds to update and get data.
@@ -23,7 +25,7 @@ function App() {
       method: "POST",
       body: JSON.stringify({ setpoint: setpoint, heat: heat }),
     });
-    
+
     const json = await res.json();
     setFromHeater(json);
   }, 5000);
@@ -52,7 +54,7 @@ function App() {
             <Typography variant={"caption"}>Temperature</Typography>
           </Grid>
           <Grid item xs={6}>
-            <Typography variant={"h6"}>{`${fromHeater.humidity/100}%`}</Typography>
+            <Typography variant={"h6"}>{`${fromHeater.humidity / 100}%`}</Typography>
             <Typography variant={"caption"}>Humidity</Typography>
           </Grid>
         </Grid>
