@@ -92,6 +92,7 @@ void sendData(WiFiClient wifi)
   doc["hum"] = humidity;
   doc["heating"] = heating;
   doc["setpt"] = setpt;
+  doc["id"] = WiFi.macAddress();
 
   String json;
   serializeJson(doc, json);

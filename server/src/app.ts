@@ -1,5 +1,11 @@
 import express from "express";
-const fs = require('fs');
+const fs = require("fs");
+
+Number.prototype["pad"] = function(size) {
+  var s = String(this);
+  while (s.length < (size || 2)) {s = "0" + s;}
+  return s;
+}
 
 const port = 3000;
 const embeddedPort = 8085;
@@ -10,6 +16,7 @@ const data = {
   temp: 15,
   humidity: 55,
   heating: false,
+  id: "---",
 };
 
 /**
@@ -20,7 +27,6 @@ app.use(express.json());
 // serve static files from client.
 app.use(express.static("../client/build"));
 app.post("/data", (req, res) => {
-  console.log(req.body);
   data.setpoint = req.body.setpoint;
   data.heat = req.body.heat;
   res.send(
@@ -52,28 +58,42 @@ app.listen(port, () => {
 const embeddedApp = express();
 embeddedApp.use(express.json());
 
-embeddedApp.post("*", (req, res) => {
-  console.log(req.body);
+embeddedApp.post("/data", (req, res) => {
+  // data received from device
   data.temp = req.body.temp;
   data.humidity = req.body.hum;
   data.heating = req.body.heating;
+  data.id = req.body.id;
+
+  //data to send to device.
   res.send(JSON.stringify({ setpoint: data.setpoint, heat: data.heat }));
   recordData();
 });
 
 embeddedApp.listen(embeddedPort, () => {
-  return console.log(`Embedded Express is listening at http://localhost:${embeddedPort}`);
+  return console.log(
+    `Embedded Express is listening at http://localhost:${embeddedPort}`
+  );
 });
 
+/**
+ * record data to disk
+ * mac address - year - month
+ * 30AEA4070D64-2022-12
+ */
 const recordData = () => {
   const date = new Date();
-  const content = JSON.stringify({...data, time: date.getTime()}) + '\n';
-  const fileName = `data${date.getUTCFullYear()}${date.getUTCMonth()}.data`;
+  const content = JSON.stringify({ ...data, time: date.getTime() }) + "\n";
+  const fileName = `${data.id.replace(
+    ":",
+    ""
+    // @ts-ignore we added it above
+  )}-${date.getUTCFullYear()}-${date.getUTCMonth().pad(2)}.data`;
 
-  fs.appendFile(fileName, content, err => {
+  fs.appendFile(fileName, content, (err) => {
     if (err) {
       console.error(err);
     }
     // done!
   });
-}
+};
