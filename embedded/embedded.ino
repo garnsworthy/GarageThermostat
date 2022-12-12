@@ -6,8 +6,8 @@
 DHTesp dht;
 
 const char *ssid = "ufo";
-const char *password = "1234asdf";
-const char *host = "192.168.1.36";
+const char *password = "";
+const char *host = "";
 // const char *host = "192.168.1.7";
 const char *path = "/data";
 const uint16_t port = 8085;
@@ -16,7 +16,7 @@ const int HEATING = D1;
 
 int temperature;     // C * 100
 int humidity;        // % * 100
-int setPoint = 1278; // C * 100 (55 F)
+int setpt = 1278; // C * 100 (55 F)
 boolean heat = false;
 boolean heating = false;
 
@@ -50,9 +50,9 @@ void loop()
   humidity = int(dht.getHumidity() * 100);
   temperature = int(dht.getTemperature() * 100);
 
-  if(temperature > setPoint + deadband) {
+  if(temperature > setpt + deadband) {
     heating = false;
-  } else if(temperature < setPoint - deadband) {
+  } else if(temperature < setpt - deadband) {
     heating = true;
   }
 
@@ -64,7 +64,7 @@ Serial.println(heating);
     digitalWrite(HEATING, LOW);
   }
 
-  if ((millis() - lastRead) > 15 * 1000)
+  if ((millis() - lastRead) > 60 * 1000)
   {
     if (!wifi.connect(host, port))
     {
@@ -77,19 +77,33 @@ Serial.println(heating);
   }
 }
 
+/**
+ * @brief send our data to the server
+ * - temp
+ * - hum
+ * - heating, furnace heating
+ * - setpt, should have received from server, but good to verify or if we set from terminal 
+ * @param wifi 
+ */
 void sendData(WiFiClient wifi)
 {
   StaticJsonDocument<200> doc;
   doc["temp"] = temperature;
   doc["hum"] = humidity;
   doc["heating"] = heating;
-  doc["setpt"] = setPoint;
+  doc["setpt"] = setpt;
 
   String json;
   serializeJson(doc, json);
   client.post("/data", "application/json", json);
 }
 
+/**
+ * @brief read back data from the server
+ * - heat, server wants heat.
+ * - setpt, setpoint from server.
+ * @param wifi 
+ */
 void readData(WiFiClient wifi)
 {
   // Read all the lines of the reply from server and print them to Serial
@@ -102,6 +116,6 @@ void readData(WiFiClient wifi)
 
   StaticJsonDocument<200> doc;
   deserializeJson(doc, response);
-  setPoint = doc["setpoint"];
+  setpt = doc["setpt"];
   heat = doc["heat"];
 }
