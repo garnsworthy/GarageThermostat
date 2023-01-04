@@ -85,9 +85,7 @@ embeddedApp.listen(embeddedPort, () => {
  */
 const recordData = () => {
   const date = new Date();
-  const content = `{s:${data.setpoint}, h:${data.heat}, t:${data.temp}, h:${
-    data.humidity
-  }, t:$${date.getTime()}}`;
+  const content = `{s:${data.setpoint},h:${data.heat},t:${data.temp},hu:${data.humidity},ti:${date.getTime()}},\n`;
   // @ts-ignore we added it above
   const fileName = `${data.id.split(":").join("")}-${date.getUTCFullYear()}-${date.getUTCMonth().pad(2)}.data`;
 
