@@ -88,6 +88,7 @@ const recordData = () => {
   const content = `{s:${data.setpoint}, h:${data.heat}, t:${data.temp}, h:${
     data.humidity
   }, t:$${date.getTime()}}`;
+  // @ts-ignore we added it above
   const fileName = `${data.id.split(":").join("")}-${date.getUTCFullYear()}-${date.getUTCMonth().pad(2)}.data`;
 
   fs.appendFile(fileName, content, (err) => {
