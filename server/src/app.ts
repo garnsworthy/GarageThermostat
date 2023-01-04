@@ -83,8 +83,8 @@ embeddedApp.listen(embeddedPort, () => {
  */
 const recordData = () => {
   const date = new Date();
-  const content = JSON.stringify({ ...data, time: date.getTime() }) + "\n";
-  const fileName = `${data.id.replace(
+  const content = `{s:${data.setpoint}, h:${data.heat}, t:${data.temp}, h:${data.humidity}, t:$${date.getTime()}}`
+  const fileName = `${data.id.replaceAll(
     ":",
     ""
     // @ts-ignore we added it above
