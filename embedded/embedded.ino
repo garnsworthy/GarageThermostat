@@ -6,9 +6,8 @@
 DHTesp dht;
 
 const char *ssid = "ufo";
-const char *password = "";
-const char *host = "";
-// const char *host = "192.168.1.7";
+const char *password = "1234asdf";
+const char *host = "192.168.1.7";
 const char *path = "/data";
 const uint16_t port = 8085;
 const int deadband = 2;
@@ -64,7 +63,7 @@ Serial.println(heating);
     digitalWrite(HEATING, LOW);
   }
 
-  if ((millis() - lastRead) > 60 * 1000)
+  if ((millis() -  ) > 60 * 1000)
   {
     if (!wifi.connect(host, port))
     {
