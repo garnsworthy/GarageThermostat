@@ -1,11 +1,13 @@
 import express from "express";
 const fs = require("fs");
 
-Number.prototype["pad"] = function(size) {
+Number.prototype["pad"] = function (size) {
   var s = String(this);
-  while (s.length < (size || 2)) {s = "0" + s;}
+  while (s.length < (size || 2)) {
+    s = "0" + s;
+  }
   return s;
-}
+};
 
 const port = 3000;
 const embeddedPort = 8085;
@@ -83,12 +85,10 @@ embeddedApp.listen(embeddedPort, () => {
  */
 const recordData = () => {
   const date = new Date();
-  const content = `{s:${data.setpoint}, h:${data.heat}, t:${data.temp}, h:${data.humidity}, t:$${date.getTime()}}`
-  const fileName = `${data.id.replaceAll(
-    ":",
-    ""
-    // @ts-ignore we added it above
-  )}-${date.getUTCFullYear()}-${date.getUTCMonth().pad(2)}.data`;
+  const content = `{s:${data.setpoint}, h:${data.heat}, t:${data.temp}, h:${
+    data.humidity
+  }, t:$${date.getTime()}}`;
+  const fileName = `${data.id.split(":").join("")}-${date.getUTCFullYear()}-${date.getUTCMonth().pad(2)}.data`;
 
   fs.appendFile(fileName, content, (err) => {
     if (err) {
