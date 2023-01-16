@@ -10,7 +10,7 @@ const char *password = "1234asdf";
 const char *host = "192.168.1.7";
 const char *path = "/data";
 const uint16_t port = 8085;
-const int deadband = 2;
+const int deadband = 200; // C * 100
 const int HEATING = D1;
 
 int temperature;     // C * 100
