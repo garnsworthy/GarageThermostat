@@ -49,14 +49,12 @@ void loop()
   humidity = int(dht.getHumidity() * 100);
   temperature = int(dht.getTemperature() * 100);
 
-  if(temperature > setpt + deadband) {
-    heating = false;
-  } else if(temperature < setpt - deadband) {
+  if(temperature < (setpt - deadband)) {
     heating = true;
+  } else if(temperature > (setpt + deadband)){
+    heating = false;
   }
 
-Serial.println(heat);
-Serial.println(heating);
   if(heat && heating) {
     digitalWrite(HEATING, HIGH);
   } else {

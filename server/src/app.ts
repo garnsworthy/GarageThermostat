@@ -1,13 +1,23 @@
 import express from "express";
 const fs = require("fs");
 
-Number.prototype["pad"] = function (size) {
+// @ts-ignore
+Number.prototype["pad"] = function (size:number) {
   var s = String(this);
   while (s.length < (size || 2)) {
     s = "0" + s;
   }
   return s;
 };
+
+export interface EmbeddedStateI {
+  temp: number,
+  humidity: number,
+  heating: boolean,
+  setpoint: number,
+  heat: boolean,
+  id: string,
+}
 
 const port = 3000;
 const embeddedPort = 8085;
@@ -39,12 +49,15 @@ app.post("/data", (req, res) => {
     })
   );
 });
+
 app.get("/data", (req, res) => {
   res.send(
     JSON.stringify({
       temp: data.temp,
       humidity: data.humidity,
       heating: data.heating,
+      setpoint: data.setpoint,
+      heat: data.heat,
     })
   );
 });
@@ -67,8 +80,10 @@ embeddedApp.post("/data", (req, res) => {
   data.heating = req.body.heating;
   data.id = req.body.id;
 
+  console.log(req.body);
+
   //data to send to device.
-  res.send(JSON.stringify({ setpoint: data.setpoint, heat: data.heat }));
+  res.send(JSON.stringify({ setpt: data.setpoint, heat: data.heat }));
   recordData();
 });
 
@@ -85,11 +100,11 @@ embeddedApp.listen(embeddedPort, () => {
  */
 const recordData = () => {
   const date = new Date();
-  const content = `{s:${data.setpoint},h:${data.heat},t:${data.temp},hu:${data.humidity},ti:${date.getTime()}},\n`;
+  const content = `{s:${data.setpoint},h:${data.heat?1:0},hg:${data.heating?1:0},t:${data.temp},hu:${data.humidity},ti:${date.getTime()}},\n`;
   // @ts-ignore we added it above
   const fileName = `${data.id.split(":").join("")}-${date.getUTCFullYear()}-${date.getUTCMonth().pad(2)}.data`;
 
-  fs.appendFile(fileName, content, (err) => {
+  fs.appendFile(fileName, content, (err:string) => {
     if (err) {
       console.error(err);
     }
