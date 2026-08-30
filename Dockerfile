@@ -5,6 +5,7 @@ COPY client/package.json client/package-lock.json ./
 RUN npm ci
 COPY client/ ./
 COPY embedded/ /build/embedded
+COPY server/ /build/server
 RUN npm run build
 
 FROM node:20-alpine AS server-build
