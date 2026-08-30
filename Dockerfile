@@ -4,7 +4,7 @@ WORKDIR /build/client
 COPY client/package.json client/package-lock.json ./
 RUN npm ci
 COPY client/ ./
-COPY embeded/ /build/embeded
+COPY embedded/ /build/embedded
 RUN npm run build
 
 FROM node:20-alpine AS server-build
