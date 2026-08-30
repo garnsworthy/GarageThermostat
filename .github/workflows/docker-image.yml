@@ -16,6 +16,6 @@ jobs:
     - uses: actions/checkout@v4
     - name: Build the Docker image
       run: |
-           docker build . --file Dockerfile --tag garage:$(date +%s) garage:latest
+           docker build . --file Dockerfile --tag garage:$(date +%s) --tag garage:latest
            docker push ghcr.io/garnsworthy/garage:$(date +%s)
            docker push ghcr.io/garnsworthy/garage:latest
