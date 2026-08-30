@@ -14,6 +14,29 @@ Variables:
  - setpt, temp in deg C * 100
  - id, the mac address of the device
 
+## Docker deployment
+
+From the repository root, build an image that compiles the React client and
+TypeScript server inside Docker:
+
+```sh
+docker build -t garage-thermostat:latest .
+```
+
+Run it on the NAS, publishing the browser UI/API on port 3000 and the ESP
+controller endpoint on port 8085:
+
+```sh
+docker run -d --name garage-thermostat --restart unless-stopped \
+	-p 3000:3000 -p 8085:8085 \
+	-v /volume1/docker/garage-thermostat:/data \
+	garage-thermostat:latest
+```
+
+Open `http://<nas-address>:3000` in a browser. Configure the ESP controller to
+send updates to `http://<nas-address>:8085/data`. Change the host path before
+running the command if your NAS stores Docker data elsewhere.
+
  When compiling with the Arduino IDE you need to install the following packages:
 
  ![board support package](boardPackageInstall.png)

@@ -1,4 +1,5 @@
 import express from "express";
+import path from "path";
 const fs = require("fs");
 
 // @ts-ignore
@@ -21,6 +22,9 @@ export interface EmbeddedStateI {
 
 const port = 3000;
 const embeddedPort = 8085;
+const dataDirectory = process.env.DATA_DIR ?? process.cwd();
+
+fs.mkdirSync(dataDirectory, { recursive: true });
 
 const data = {
   setpoint: 1100,
@@ -37,7 +41,7 @@ const data = {
 const app = express();
 app.use(express.json());
 // serve static files from client.
-app.use(express.static("../client/build"));
+app.use(express.static(path.join(__dirname, "../client")));
 app.post("/data", (req, res) => {
   data.setpoint = req.body.setpoint;
   data.heat = req.body.heat;
@@ -102,7 +106,10 @@ const recordData = () => {
   const date = new Date();
   const content = `{s:${data.setpoint},h:${data.heat?1:0},hg:${data.heating?1:0},t:${data.temp},hu:${data.humidity},ti:${date.getTime()}},\n`;
   // @ts-ignore we added it above
-  const fileName = `${data.id.split(":").join("")}-${date.getUTCFullYear()}-${date.getUTCMonth().pad(2)}.data`;
+  const fileName = path.join(
+    dataDirectory,
+    `${data.id.split(":").join("")}-${date.getUTCFullYear()}-${String(date.getUTCMonth()).padStart(2, "0")}.data`
+  );
 
   fs.appendFile(fileName, content, (err:string) => {
     if (err) {
