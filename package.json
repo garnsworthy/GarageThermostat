@@ -1,0 +1,14 @@
+{
+  "name": "garage-thermostat",
+  "private": true,
+  "workspaces": [
+    "client",
+    "server"
+  ],
+  "scripts": {
+    "build:client": "npm run build --workspace=client",
+    "build:server": "npm run build --workspace=server",
+    "build": "npm run build:client && npm run build:server",
+    "start": "npm run build && npm run start --workspace=server"
+  }
+}

@@ -14,6 +14,26 @@ Variables:
  - setpt, temp in deg C * 100
  - id, the mac address of the device
 
+## Local development
+
+Install dependencies once from the repository root:
+
+```sh
+npm install
+```
+
+Build both applications and start the server:
+
+```sh
+npm start
+```
+
+To create build artifacts without starting the server, run:
+
+```sh
+npm run build
+```
+
 ## Docker deployment
 
 From the repository root, build an image that compiles the React client and

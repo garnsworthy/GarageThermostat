@@ -1,20 +1,13 @@
-FROM node:20-alpine AS client-build
+FROM node:20-alpine AS build
 
-WORKDIR /build/client
-COPY client/package.json client/package-lock.json ./
+WORKDIR /app
+COPY package.json package-lock.json ./
+COPY client/package.json ./client/package.json
+COPY server/package.json ./server/package.json
 RUN npm ci
-COPY client/ ./
-COPY embedded/ /build/embedded
-COPY server/ /build/server
+COPY client/ ./client/
+COPY server/ ./server/
 RUN npm run build
-
-FROM node:20-alpine AS server-build
-
-WORKDIR /build/server
-COPY server/package.json server/package-lock.json ./
-RUN npm ci
-COPY server/ ./
-RUN npx tsc
 
 FROM node:20-alpine
 
@@ -22,11 +15,13 @@ ENV NODE_ENV=production
 ENV DATA_DIR=/data
 WORKDIR /app
 
-COPY server/package.json server/package-lock.json ./
-RUN npm ci --omit=dev
-COPY --from=server-build /build/server/dist ./dist
-COPY --from=client-build /build/client/build ./client
+COPY package.json package-lock.json ./
+COPY client/package.json ./client/package.json
+COPY server/package.json ./server/package.json
+RUN npm ci --workspace=server --omit=dev
+COPY --from=build /app/server/dist ./server/dist
+COPY --from=build /app/client/build ./client/build
 
 EXPOSE 3000 8085
 VOLUME ["/data"]
-CMD ["node", "dist/app.js"]
+CMD ["node", "server/dist/app.js"]

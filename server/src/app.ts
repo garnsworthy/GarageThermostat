@@ -41,7 +41,7 @@ const data = {
 const app = express();
 app.use(express.json());
 // serve static files from client.
-app.use(express.static(path.join(__dirname, "../client")));
+app.use(express.static(path.resolve(__dirname, "../../client/build")));
 app.post("/data", (req, res) => {
   data.setpoint = req.body.setpoint;
   data.heat = req.body.heat;
